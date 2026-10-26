@@ -1,21 +1,24 @@
-y<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>पंडित विशाल शर्मा ज्योतिष केंद्र</title>
+<title>विशाल शर्मा ज्योतिष केंद्र</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#fff8e8;color:#40200c;text-align:center}
-header{background:linear-gradient(135deg,#751515,#d97706);color:white;padding:28px 15px}
-.om{font-size:24px;color:#ffe79b}
-h1{font-size:27px;margin:16px 0}
-section{padding:20px 15px}
-.card{background:white;border:2px solid #e8bd68;border-radius:18px;padding:22px 15px;margin:15px auto;max-width:420px;box-shadow:0 5px 15px #0001}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8e8;color:#33210b;text-align:center}
+header{background:linear-gradient(135deg,#751515,#d97706);color:white;padding:25px 15px}
+.om{font-size:23px;color:#ffe79b}
+h1{font-size:26px;margin:15px 0}
+section{padding:18px 12px}
+.card{background:white;border:2px solid #e8bd68;border-radius:18px;padding:22px 15px;margin:15px auto;max-width:430px}
 .price{font-size:32px;color:#a51d1d;font-weight:bold;margin:12px}
-button{border:0;border-radius:30px;background:#14804a;color:white;padding:14px 22px;font-size:17px;width:100%;cursor:pointer}
-input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #c9ad8a;border-radius:9px;font-size:16px}
-.note{font-size:14px;color:#6b513d;line-height:1.6}
+button{border:0;border-radius:25px;background:#a51d1d;color:white;padding:15px 20px;font-size:17px;width:100%;cursor:pointer;margin-top:10px}
+button:disabled{background:#777}
+#payment{display:none}
+#whatsapp{display:none;background:#128c4a}
+img{max-width:100%;width:240px;border-radius:12px;margin:12px auto}
+.note{font-size:14px;color:#66513d;line-height:1.6}
 footer{background:#4b170c;color:white;padding:20px}
 </style>
 </head>
@@ -30,66 +33,51 @@ footer{background:#4b170c;color:white;padding:20px}
 
 <section>
 <h2>🔮 अपना परामर्श चुनें</h2>
+
 <div class="card">
 <h3>5 मिनट परामर्श</h3>
 <div class="price">₹21</div>
 <button onclick="choose(21)">₹21 का विकल्प चुनें</button>
 </div>
+
 <div class="card">
 <h3>विस्तृत परामर्श</h3>
 <div class="price">₹51</div>
 <button onclick="choose(51)">₹51 का विकल्प चुनें</button>
 </div>
-<div class="card" id="payment-qr">
-  <h2>💳 पेमेंट करें</h2>
-  <p>अपनी पसंद का विकल्प चुनें और नीचे QR कोड स्कैन करें।</p>
 
-  <img src="payment_qr.png"
-       alt="पेमेंट QR कोड"
-       style="width:220px;max-width:100%;border-radius:12px;">
-
-  <h3>🔒 पेमेंट सुरक्षा</h3>
-  <p>पेमेंट करने से पहले प्राप्तकर्ता का नाम और राशि जाँच लें।</p>
-  <p>पैसे प्राप्त करने के लिए कभी भी UPI PIN न डालें।</p>
-  <p>पेमेंट करने के बाद WhatsApp पर अपना बायोडाटा भेजें।</p>
-</div>
-<div class="card" id="form">
-<h2>अपनी जानकारी भरें</h2>
-<p id="selected">पहले ऊपर परामर्श चुनें।</p>
-<form onsubmit="sendForm(event)">
-<input id="package" type="hidden">
-<input id="name" placeholder="आपका पूरा नाम" required>
-<input id="dob" type="date" required>
-<input id="time" placeholder="जन्म का समय (यदि मालूम हो)">
-<input id="place" placeholder="जन्म स्थान / गाँव" required>
-<textarea id="question" placeholder="आप क्या जानना चाहते हैं?" rows="3" required></textarea>
-<button type="submit">WhatsApp पर जानकारी भेजें</button>
-</form>
-<p class="note">यह फॉर्म जानकारी WhatsApp पर भेजने के लिए है। यह अपने-आप भुगतान की पुष्टि नहीं करता।</p>
+<div class="card" id="payment">
+<h2>💳 पेमेंट करें</h2>
+<p id="amount"></p>
+<p>नीचे दिए गए QR कोड को स्कैन करके पेमेंट करें।</p>
+<img src="payment_qr.png" alt="पेमेंट QR कोड">
+<p class="note">पेमेंट करने के बाद WhatsApp पर पेमेंट का स्क्रीनशॉट भेजें।</p>
+<button id="whatsapp" onclick="openWhatsApp()">WhatsApp पर पेमेंट स्क्रीनशॉट भेजें</button>
+<p class="note">पेमेंट का स्क्रीनशॉट भेजने के बाद भुगतान की पुष्टि की जाएगी।</p>
 </div>
 </section>
+
 <footer>
 <p>ॐ नमः शिवाय 🙏</p>
 <p>पंडित विशाल शर्मा ज्योतिष केंद्र</p>
 </footer>
 
 <script>
+let selectedAmount=0;
+
 function choose(amount){
-document.getElementById('package').value=amount;
-document.getElementById('selected').innerText='आपने ₹'+amount+' का परामर्श चुना है।';
-document.getElementById('form').scrollIntoView({behavior:'smooth'});
+selectedAmount=amount;
+document.getElementById('amount').innerText=
+'आपने ₹'+amount+' का परामर्श चुना है।';
+document.getElementById('payment').style.display='block';
+document.getElementById('whatsapp').style.display='block';
+document.getElementById('payment').scrollIntoView({behavior:'smooth'});
 }
-function sendForm(e){
-e.preventDefault();
-let amount=document.getElementById('package').value;
-if(!amount){alert('पहले ₹21 या ₹51 का परामर्श चुनें।');return;}
-let msg='ज्योतिष परामर्श अनुरोध%0Aपैकेज: ₹'+amount+
-'%0Aनाम: '+encodeURIComponent(document.getElementById('name').value)+
-'%0Aजन्मतिथि: '+encodeURIComponent(document.getElementById('dob').value)+
-'%0Aजन्म समय: '+encodeURIComponent(document.getElementById('time').value)+
-'%0Aजन्म स्थान: '+encodeURIComponent(document.getElementById('place').value)+
-'%0Aसवाल: '+encodeURIComponent(document.getElementById('question').value);
-window.open('https://wa.me/919068169344?text='+msg,'_blank');
+
+function openWhatsApp(){
+const message='नमस्ते पंडित विशाल शर्मा जी। मैंने ₹'+
+selectedAmount+' के परामर्श के लिए पेमेंट किया है। मैं पेमेंट का स्क्रीनशॉट भेज रहा/रही हूँ।';
+window.open('https://wa.me/9191068169344?text='+encodeURIComponent(message),'_blank');
 }
 </script>
 </body>
